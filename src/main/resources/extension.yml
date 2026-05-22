@@ -1,8 +1,8 @@
-name: "MyExtension"
-main: "io.github.mcpaimon.extension.template.Template"
+name: "PlayerTools"
+main: "io.github.mcpaimon.extension.player.PlayerExtension"
 version: "1.0.0"
 
 git:
   provider: github
   owner: MCPaimon-Extension
-  repository: template
+  repository: player

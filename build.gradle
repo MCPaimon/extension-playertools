@@ -36,5 +36,5 @@ java {
 }
 
 base {
-    archivesName = "MCAI"
+    archivesName = "PlayerTools"
 }
