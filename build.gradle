@@ -1,0 +1,40 @@
+plugins {
+    id 'java-library'
+}
+
+version = "${project.property('project-version')}-${project.property('project-iteration')}"
+group = project.property('project-group')
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "MCEngine"
+        url = "https://maven.pkg.github.com/MCPaimon/plugin"
+        credentials {
+            username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
+            password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
+        }
+    }
+    maven {
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
+    }
+}
+
+dependencies {
+    compileOnly 'io.github.mcpaimon:api:2026.0.6-1'
+    compileOnly 'io.github.mcpaimon:common:2026.0.6-1'
+    compileOnly 'io.github.mcpaimon:papermc:2026.0.6-1'
+
+    compileOnly 'io.papermc.paper:paper-api:26.1.2.build.+'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+base {
+    archivesName = "MCAI"
+}

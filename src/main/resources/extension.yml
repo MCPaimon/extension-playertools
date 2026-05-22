@@ -1,0 +1,8 @@
+name: "MyExtension"
+main: "io.github.mcpaimon.extension.template.Template"
+version: "1.0.0"
+
+git:
+  provider: github
+  owner: MCPaimon-Extension
+  repository: template
