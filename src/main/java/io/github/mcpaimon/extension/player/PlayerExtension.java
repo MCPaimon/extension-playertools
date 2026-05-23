@@ -14,6 +14,9 @@ public class PlayerExtension implements IMCExtension {
     public void onLoad(JavaPlugin plugin, Executor executor) {
         if (plugin instanceof MCAIPlugin mcaiPlugin) {
             
+            // Create the player category
+            mcaiPlugin.getManager().createCategory("player", "Tools for player information and management");
+            
             // Register all custom player-related tools here
             mcaiPlugin.getManager().registerTool(new GetPlayerNameTool());
             mcaiPlugin.getManager().registerTool(new GetPlayerUuidTool());

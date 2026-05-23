@@ -3,6 +3,7 @@ package io.github.mcpaimon.extension.player.tools;
 import io.github.mcpaimon.api.model.AIAccount;
 import io.github.mcpaimon.api.tools.AITool;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -19,6 +20,11 @@ public class GetPlayerUuidTool implements AITool {
     @Override
     public String getParametersJsonSchema() {
         return "{ \"type\": \"object\", \"properties\": {} }";
+    }
+
+    @Override
+    public List<String> getCategories() {
+        return List.of("player");
     }
 
     @Override

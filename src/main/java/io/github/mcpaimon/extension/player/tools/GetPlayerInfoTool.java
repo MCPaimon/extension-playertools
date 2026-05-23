@@ -5,6 +5,7 @@ import io.github.mcpaimon.api.tools.AITool;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -25,6 +26,11 @@ public class GetPlayerInfoTool implements AITool {
     @Override
     public String getParametersJsonSchema() {
         return "{ \"type\": \"object\", \"properties\": { \"targetName\": { \"type\": \"string\" } } }";
+    }
+
+    @Override
+    public List<String> getCategories() {
+        return List.of("player");
     }
 
     @Override
