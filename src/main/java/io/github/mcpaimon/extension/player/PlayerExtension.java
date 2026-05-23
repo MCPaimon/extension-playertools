@@ -27,7 +27,9 @@ public class PlayerExtension implements IMCExtension {
             // Register new admin tools
             mcaiPlugin.getManager().registerTool(new BanPlayerTool());
             mcaiPlugin.getManager().registerTool(new BanPlayerIpTool());
+            mcaiPlugin.getManager().registerTool(new CheckAllPlayerOpTool());
             mcaiPlugin.getManager().registerTool(new CheckPlayerIpTool());
+            mcaiPlugin.getManager().registerTool(new CheckPlayersOpTool());
             
             plugin.getLogger().info("Player extension loaded successfully. Tools registered.");
         } else {

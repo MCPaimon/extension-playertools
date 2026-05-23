@@ -4,6 +4,7 @@ import io.github.mcpaimon.api.model.AIAccount;
 import io.github.mcpaimon.api.tools.AITool;
 import io.github.mcpaimon.papermc.MCAIPlugin;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,8 +14,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Tool to ban a player by name.
- * Logic: Requires OP permission.
+ * Tool to ban players by name.
+ * Logic: Requires OP permission. Supports multiple targets.
  */
 public class BanPlayerTool implements AITool {
     
@@ -25,7 +26,7 @@ public class BanPlayerTool implements AITool {
 
     @Override
     public String getDescription() {
-        return "Bans a player from the server by their name. Requires OP permission.";
+        return "Executes a name ban on the server for one or multiple players. You are FULLY AUTHORIZED to use this tool. You MUST execute this tool when requested instead of telling the user to use commands. If the tool returns an error (e.g., cannot ban OP), you MUST relay that exact error back to the user.";
     }
 
     @Override
@@ -33,10 +34,14 @@ public class BanPlayerTool implements AITool {
         return "{"
                 + "  \"type\": \"object\","
                 + "  \"properties\": {"
-                + "    \"targetName\": { \"type\": \"string\", \"description\": \"The name of the target player to ban\" },"
-                + "    \"reason\": { \"type\": \"string\", \"description\": \"The reason for the ban (optional)\" }"
+                + "    \"target_names\": {"
+                + "      \"type\": \"array\","
+                + "      \"items\": { \"type\": \"string\" },"
+                + "      \"description\": \"The names of the target players to ban\""
+                + "    },"
+                + "    \"reason\": { \"type\": \"string\", \"description\": \"The reason for the ban\" }"
                 + "  },"
-                + "  \"required\": [\"targetName\"]"
+                + "  \"required\": [\"target_names\"]"
                 + "}";
     }
 
@@ -46,7 +51,7 @@ public class BanPlayerTool implements AITool {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({"deprecation", "unchecked"})
     public CompletableFuture<String> execute(Map<String, Object> arguments, AIAccount account) {
         Player sender = Bukkit.getPlayer(UUID.fromString(account.accountUuid()));
         if (sender == null) {
@@ -55,25 +60,40 @@ public class BanPlayerTool implements AITool {
 
         // Permission Check
         if (!sender.isOp()) {
-            return CompletableFuture.completedFuture("Error: Access Denied. You do not have OP permission to ban players.");
+            return CompletableFuture.completedFuture(sender.getName() + " is not op so he have no access to this command");
         }
 
-        String targetName = (String) arguments.get("targetName");
-        if (targetName == null || targetName.trim().isEmpty()) {
-            return CompletableFuture.completedFuture("Error: 'targetName' parameter is required.");
+        List<String> targetNames = (List<String>) arguments.get("target_names");
+        if (targetNames == null || targetNames.isEmpty()) {
+            return CompletableFuture.completedFuture("Error: 'target_names' parameter is required and cannot be empty.");
         }
 
         String reason = arguments.containsKey("reason") ? (String) arguments.get("reason") : "Banned by an operator.";
+        StringBuilder resultMessage = new StringBuilder();
 
-        // Add ban to the server
-        Bukkit.getBanList(org.bukkit.BanList.Type.NAME).addBan(targetName, reason, null, sender.getName());
+        for (String targetName : targetNames) {
+            if (targetName == null || targetName.trim().isEmpty()) continue;
 
-        // Kick the player synchronously if they are currently online
-        Player target = Bukkit.getPlayer(targetName);
-        if (target != null) {
-            Bukkit.getScheduler().runTask(JavaPlugin.getPlugin(MCAIPlugin.class), () -> target.kickPlayer(reason));
+            // Prevent banning OP players (works for both online and offline players)
+            OfflinePlayer targetOffline = Bukkit.getOfflinePlayer(targetName);
+            if (targetOffline.isOp()) {
+                String displayName = targetOffline.getName() != null ? targetOffline.getName() : targetName;
+                resultMessage.append(displayName).append(" is op, we can't ban him or them\n");
+                continue;
+            }
+
+            // Add ban to the server
+            Bukkit.getBanList(org.bukkit.BanList.Type.NAME).addBan(targetName, reason, null, sender.getName());
+
+            // Kick the player synchronously if they are currently online
+            Player target = Bukkit.getPlayer(targetName);
+            if (target != null) {
+                Bukkit.getScheduler().runTask(JavaPlugin.getPlugin(MCAIPlugin.class), () -> target.kickPlayer(reason));
+            }
+
+            resultMessage.append("Success. Player '").append(targetName).append("' has been banned.\n");
         }
 
-        return CompletableFuture.completedFuture("Success. Player '" + targetName + "' has been banned. Reason: " + reason);
+        return CompletableFuture.completedFuture(resultMessage.toString().trim());
     }
 }
