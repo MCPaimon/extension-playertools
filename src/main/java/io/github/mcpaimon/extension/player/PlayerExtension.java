@@ -24,6 +24,11 @@ public class PlayerExtension implements IMCExtension {
             mcaiPlugin.getManager().registerTool(new GetPlayerFoodTool());
             mcaiPlugin.getManager().registerTool(new GetPlayerInfoTool());
             
+            // Register new admin tools
+            mcaiPlugin.getManager().registerTool(new BanPlayerTool());
+            mcaiPlugin.getManager().registerTool(new BanPlayerIpTool());
+            mcaiPlugin.getManager().registerTool(new CheckPlayerIpTool());
+            
             plugin.getLogger().info("Player extension loaded successfully. Tools registered.");
         } else {
             plugin.getLogger().severe("Failed to load Player extension: Host plugin is not MCAIPlugin.");
