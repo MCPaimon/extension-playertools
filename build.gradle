@@ -7,7 +7,7 @@ plugins {
 
 allprojects {
     group = project.property('project-group')
-    version = "${project.property('project-version')}-${project.property('project-iteration')}"
+    version = project.property('project-version')
 
     repositories {
         mavenCentral()
@@ -78,7 +78,7 @@ dependencies {
 processResources {
     def props = [
         "name": project.property("project-name"),
-        "version": "${project.property('project-version')}-${project.property('project-iteration')}",
+        "version": project.property('project-version'),
         "group": project.property('project-group')
     ]
 
