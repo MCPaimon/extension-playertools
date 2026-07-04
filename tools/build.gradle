@@ -21,7 +21,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-            artifactId = 'tools'
+            artifactId = 'playertools-tools'
 
             pom {
                 name = project.name
