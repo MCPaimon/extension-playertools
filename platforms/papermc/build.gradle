@@ -1,0 +1,34 @@
+repositories {
+    maven {
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
+    }
+}
+
+dependencies {
+    compileOnly project(':tools')
+
+    // Paper API
+    compileOnly 'io.papermc.paper:paper-api:26.1.2.build.+'
+
+    // MCPaimon PaperMC specific dependency
+    compileOnly 'io.github.mcpaimon:papermc:2026.0.7-8'
+}
+
+base {
+    archivesName = "${project.property('project-name')}PaperMC"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifactId = 'papermc'
+
+            pom {
+                name = project.name
+                description = "MCPaimon Extension PlayerTools PaperMC"
+            }
+        }
+    }
+}

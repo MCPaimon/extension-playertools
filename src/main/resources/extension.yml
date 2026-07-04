@@ -1,6 +1,10 @@
-name: "PlayerTools"
-main: "io.github.mcpaimon.extension.player.PlayerExtension"
-version: "1.0.0"
+name: ${name}
+version: ${version}
+
+mains:
+  papermc: "${group}.papermc.PlayerTools"
+  spigotmc: "${group}.spigotmc.PlayerTools"
+  foliamc: "${group}.foliamc.PlayerTools"
 
 git:
   provider: github

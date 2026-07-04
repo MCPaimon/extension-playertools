@@ -1,0 +1,34 @@
+repositories {
+    maven {
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
+    }
+}
+
+dependencies {
+    compileOnly project(':tools')
+
+    // Folia API
+    compileOnly 'dev.folia:folia-api:26.1.2.build.+'
+
+    // MCPaimon FoliaMC specific dependency
+    compileOnly 'io.github.mcpaimon:foliamc:2026.0.7-8'
+}
+
+base {
+    archivesName = "${project.property('project-name')}FoliaMC"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifactId = 'foliamc'
+
+            pom {
+                name = project.name
+                description = "MCPaimon Extension PlayerTools FoliaMC"
+            }
+        }
+    }
+}

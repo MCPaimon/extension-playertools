@@ -1,0 +1,32 @@
+repositories {
+    maven {
+        url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
+
+        content {
+            includeGroup 'org.bukkit'
+            includeGroup 'org.spigotmc'
+        }
+    }
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:26.1.2-R0.1-SNAPSHOT'
+}
+
+base {
+    archivesName = "${project.property('project-name')}Tools"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifactId = 'tools'
+
+            pom {
+                name = project.name
+                description = "MCPaimon Extension PlayerTools Tools"
+            }
+        }
+    }
+}

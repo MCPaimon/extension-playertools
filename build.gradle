@@ -1,40 +1,106 @@
 plugins {
-    id 'java-library'
+    id 'java'
+    id 'maven-publish'
+    // Plugin for building a Fat JAR (Shadow JAR)
+    id 'com.gradleup.shadow' version '9.4.2'
 }
 
-version = "${project.property('project-version')}-${project.property('project-iteration')}"
-group = project.property('project-group')
+allprojects {
+    group = project.property('project-group')
+    version = "${project.property('project-version')}-${project.property('project-iteration')}"
 
-repositories {
-    mavenCentral()
-    maven {
-        name = "MCEngine"
-        url = "https://maven.pkg.github.com/MCPaimon/plugin"
-        credentials {
-            username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
-            password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
+    repositories {
+        mavenCentral()
+        maven {
+            name = "MCPaimon"
+            url = "https://maven.pkg.github.com/MCPaimon/plugin"
+            credentials {
+                username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
+                password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
+            }
         }
     }
-    maven {
-        name = "papermc-repo"
-        url = "https://repo.papermc.io/repository/maven-public/"
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
+        }
+    }
+
+    dependencies {
+        // Base API and Common dependencies for all subprojects (Tools, PaperMC, etc.)
+        compileOnly 'io.github.mcpaimon:api:2026.0.7-8'
+        compileOnly 'io.github.mcpaimon:common:2026.0.7-8'
+    }
+
+    publishing {
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = "https://maven.pkg.github.com/MCPaimon-Extension/player"
+                credentials {
+                    username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
+                    password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
+                }
+            }
+        }
+
+        // Apply these POM settings to ALL MavenPublications in subprojects
+        publications.withType(MavenPublication) {
+            pom {
+                url = "https://mcpaimon.github.io/website"
+                developers {
+                    developer {
+                        id = "jetsadawijit"
+                        name = "jetsadawijit"
+                        url = "https://github.com/jetsadawijit"
+                    }
+                }
+            }
+        }
     }
 }
 
+// Depend on subprojects to include them in the root JAR
 dependencies {
-    compileOnly 'io.github.mcpaimon:api:2026.0.6-1'
-    compileOnly 'io.github.mcpaimon:common:2026.0.6-1'
-    compileOnly 'io.github.mcpaimon:papermc:2026.0.6-1'
-
-    compileOnly 'io.papermc.paper:paper-api:26.1.2.build.+'
+    implementation project(':tools')
+    implementation project(':platforms:papermc')
+    implementation project(':platforms:spigotmc')
+    implementation project(':platforms:foliamc')
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+// Process extension.yml located in the root project (src/main/resources/)
+processResources {
+    def props = [
+        "name": project.property("project-name"),
+        "version": "${project.property('project-version')}-${project.property('project-iteration')}",
+        "group": project.property('project-group')
+    ]
+
+    inputs.properties props
+    filteringCharset 'UTF-8'
+
+    filesMatching("extension.yml") {
+        expand props
     }
 }
 
-base {
-    archivesName = "PlayerTools"
+// Disable the normal jar task to prevent building the standard unshaded JAR
+tasks.named('jar') {
+    enabled = false
 }
+
+// Configure Shadow JAR to merge all subprojects into one JAR
+shadowJar {
+    archiveBaseName = 'PlayerTools'
+    archiveClassifier.set('')
+    mergeServiceFiles()
+}
+
+// Ensure build triggers shadowJar
+build.dependsOn shadowJar

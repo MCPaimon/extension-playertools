@@ -12,3 +12,8 @@ plugins {
 }
 
 rootProject.name = 'mcpaimon-extension-player'
+
+include 'tools'
+include 'platforms:papermc'
+include 'platforms:spigotmc'
+include 'platforms:foliamc'
