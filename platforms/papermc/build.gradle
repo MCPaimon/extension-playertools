@@ -23,7 +23,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-            artifactId = 'papermc'
+            artifactId = 'playertools-papermc'
 
             pom {
                 name = project.name

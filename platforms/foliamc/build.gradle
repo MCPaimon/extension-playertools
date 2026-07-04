@@ -23,7 +23,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-            artifactId = 'foliamc'
+            artifactId = 'playertools-foliamc'
 
             pom {
                 name = project.name

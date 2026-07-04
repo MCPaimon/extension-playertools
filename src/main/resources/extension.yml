@@ -8,5 +8,5 @@ mains:
 
 git:
   provider: github
-  owner: MCPaimon-Extension
-  repository: player
+  owner: MCPaimon
+  repository: extension-playertools
