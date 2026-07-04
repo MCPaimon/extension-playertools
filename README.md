@@ -2,6 +2,8 @@
 
 This module is an extension for the MCAgents plugin, designed to provide AI agents with the ability to query specific attributes and real-time statistics of Minecraft players, and to run administrative player actions. It mirrors the structure of the [Core extension](https://github.com/MCPaimon/extension-core) and supports all three platforms: PaperMC, SpigotMC, and FoliaMC.
 
+> **Note:** This extension only adds tools to the MCAgents plugin. It does not need its own route on the central API server ([`MCEngine/server-expressjs`](https://github.com/MCEngine/server-expressjs)); all persistence goes through the plugin's `/api/mcagents` route.
+
 ## Project Structure
 
 * **`tools/`**: Platform-neutral AI tools shared by every platform module.
