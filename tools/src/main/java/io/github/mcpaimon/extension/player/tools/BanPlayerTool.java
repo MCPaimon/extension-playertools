@@ -2,11 +2,9 @@ package io.github.mcpaimon.extension.player.tools;
 
 import io.github.mcpaimon.api.model.AIAccount;
 import io.github.mcpaimon.api.tools.AITool;
-import io.github.mcpaimon.papermc.MCAIPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +16,19 @@ import java.util.concurrent.CompletableFuture;
  * Logic: Requires OP permission. Supports multiple targets.
  */
 public class BanPlayerTool implements AITool {
-    
+
+    /** Schedules the kick on the thread that owns the target player. */
+    private final PlayerTaskScheduler scheduler;
+
+    /**
+     * Creates the tool with the platform specific scheduler.
+     *
+     * @param scheduler The scheduler used to kick online players safely.
+     */
+    public BanPlayerTool(PlayerTaskScheduler scheduler) {
+        this.scheduler = scheduler;
+    }
+
     @Override
     public String getName() { 
         return "ban_player"; 
@@ -88,7 +98,7 @@ public class BanPlayerTool implements AITool {
             // Kick the player synchronously if they are currently online
             Player target = Bukkit.getPlayer(targetName);
             if (target != null) {
-                Bukkit.getScheduler().runTask(JavaPlugin.getPlugin(MCAIPlugin.class), () -> target.kickPlayer(reason));
+                scheduler.run(target, () -> target.kickPlayer(reason));
             }
 
             resultMessage.append("Success. Player '").append(targetName).append("' has been banned.\n");
